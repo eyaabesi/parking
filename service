@@ -1,0 +1,515 @@
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#include <gtk/gtk.h>
+
+#include "callbacks.h"
+#include "interface.h"
+#include "support.h"
+#include "service.h"
+
+
+int dispo, dispo_modif;
+int supp_index=0;
+typedef struct{
+    char id_connect[10];
+    char mdp_connect[50];
+} Login;
+
+
+void
+on_button1_clicked                     (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_EAbuttonvalidationsuppression_clicked
+                                        (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_EAbuttonEnregistrer_clicked         (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_EA_button_ajout_clicked             (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+GtkWidget *input1, *input2, *input3, *input4, *input5;
+Service ser;
+input1 = lookup_widget(button , "EA_id_service_ajout_entry");
+input2 = lookup_widget(button , "EA_nom_service_ajout_entry");
+input3 = lookup_widget(button , "EA_type_vehicule_ajout_combobox");
+input4 = lookup_widget(button , "EA_tarif_service_ajout_entry");
+input5 = lookup_widget(button , "EA_description_ajout_entry");
+
+strcpy(ser.id_service, gtk_entry_get_text(GTK_ENTRY(input1)));
+strcpy(ser.nom_service, gtk_entry_get_text(GTK_ENTRY(input2)));
+strcpy(ser.type_vehicule, gtk_combo_box_get_active_text(GTK_COMBO_BOX(input3)));
+strcpy(ser.tarif, gtk_entry_get_text(GTK_ENTRY(input4)));
+strcpy(ser.description, gtk_entry_get_text(GTK_ENTRY(input5)));
+
+if (dispo==1)
+{
+strcpy(ser.disponibilite,"disponible");
+}
+else{strcpy(ser.disponibilite,"non_disponible");}
+
+int x_ajout = ajouter_service("service.txt", ser);
+if (x_ajout){GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_INFO,
+                                                   GTK_BUTTONS_OK,
+                                                   "Service ajouté avec succées");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+gtk_entry_set_text(GTK_ENTRY(input1),"");
+gtk_entry_set_text(GTK_ENTRY(input2),"");
+gtk_combo_box_set_active(GTK_COMBO_BOX(input3), -1);
+gtk_entry_set_text(GTK_ENTRY(input4),"");
+gtk_entry_set_text(GTK_ENTRY(input5),"");
+
+}
+else{
+GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : Service non ajouté");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+
+}
+
+
+void
+on_EAradiobuttonServicedisponible_toggled
+                                        (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton)))
+dispo =1;
+}
+
+
+void
+on_EAradiobuttonServicenondisponible_toggled
+                                        (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton)))
+dispo =2;
+}
+
+
+void
+on_EA_checkbutton_Recharge_toggled     (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_EA_checkbutton_Lavagevoiture_toggled
+                                        (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on__EAcheckbutton_Emplacement_toggled  (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_checkbutton5_toggled                (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+
+}
+
+
+void
+on_checkbutton6_toggled                (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+
+}
+
+void on_EA_button_Valider_afficher_clicked(GtkWidget *button, gpointer user_data) {
+ 
+}
+
+
+void
+on_EA_button_Rechercher__clicked       (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+ 
+}
+
+void
+on_EA_button_supprimer_clicked         (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+
+}
+   
+
+void
+on_EA_service_nondisponible_modif_radiobutton_toggled
+                                        (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton)))
+dispo_modif =2;
+}
+
+
+void
+on_EA_service_disponible_modif_radiobutton_toggled
+                                        (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton)))
+dispo_modif =1;
+}
+
+
+void
+on_EA_modif_service_button_clicked     (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+GtkWidget *input1, *input2, *input3, *input4, *input5;
+Service ser;
+char id_serv_modif[20];
+input1 = lookup_widget(button , "EA_id_service_modif_entry");
+input2 = lookup_widget(button , "EA_nom_service_modif_entry");
+input3 = lookup_widget(button , "EA_type_vehicule_modif_combobox");
+input4 = lookup_widget(button , "EA_tarif_service_modif_entry");
+input5 = lookup_widget(button , "EA_description_modif_entry");
+
+strcpy(id_serv_modif, gtk_entry_get_text(GTK_ENTRY(input1)));
+
+strcpy(ser.id_service, gtk_entry_get_text(GTK_ENTRY(input1)));
+strcpy(ser.nom_service, gtk_entry_get_text(GTK_ENTRY(input2)));
+strcpy(ser.type_vehicule, gtk_combo_box_get_active_text(GTK_COMBO_BOX(input3)));
+strcpy(ser.tarif, gtk_entry_get_text(GTK_ENTRY(input4)));
+strcpy(ser.description, gtk_entry_get_text(GTK_ENTRY(input5)));
+
+if (dispo_modif==1)
+{
+strcpy(ser.disponibilite,"disponible");
+}
+else{strcpy(ser.disponibilite,"non_disponible");}
+
+
+int x_modif = modifier_service("service.txt", id_serv_modif,ser);
+if (x_modif){GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_INFO,
+                                                   GTK_BUTTONS_OK,
+                                                   "Service modifié avec succées");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+gtk_entry_set_text(GTK_ENTRY(input1),"");
+gtk_entry_set_text(GTK_ENTRY(input2),"");
+gtk_combo_box_set_active(GTK_COMBO_BOX(input3), -1);
+gtk_entry_set_text(GTK_ENTRY(input4),"");
+gtk_entry_set_text(GTK_ENTRY(input5),"");}
+
+else {
+GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : erreur de modification");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+
+}
+
+
+void
+on_EA_chercher_modif_button_clicked    (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+GtkWidget *input1, *input2, *input3, *input4, *input5;
+Service ser;
+char id_serv_rech[20];
+input1 = lookup_widget(button , "EA_id_service_modif_entry");
+input2 = lookup_widget(button , "EA_nom_service_modif_entry");
+input3 = lookup_widget(button , "EA_type_vehicule_modif_combobox");
+input4 = lookup_widget(button , "EA_tarif_service_modif_entry");
+input5 = lookup_widget(button , "EA_description_modif_entry");
+
+strcpy(id_serv_rech, gtk_entry_get_text(GTK_ENTRY(input1)));
+ser = chercher_service("service.txt", id_serv_rech);
+if (strcmp(ser.id_service, "-1")==0){
+GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : Service non trouvé");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+} 
+
+else {
+
+gtk_entry_set_text(GTK_ENTRY(input2), ser.nom_service);
+   
+int index = -1;
+    if (strcmp(ser.type_vehicule, "Voiture") == 0) {
+        index = 0;
+    } else if (strcmp(ser.type_vehicule, "Moto/Velo") == 0) {
+        index = 1;
+    } else if (strcmp(ser.type_vehicule, "Camion") == 0) {
+        index = 2;
+    }
+    
+    if (index != -1) {
+        gtk_combo_box_set_active(GTK_COMBO_BOX(input3), index);
+    }
+gtk_entry_set_text(GTK_ENTRY(input4), ser.tarif);
+gtk_entry_set_text(GTK_ENTRY(input5), ser.description);
+
+
+
+}
+
+}
+
+
+void
+on_EA_chercher_supp_button_clicked     (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+GtkWidget *input1, *output;
+Service ser;
+char id_service_supp[20];
+
+input1 = lookup_widget(button, "EA_id_serv_supp_entry");
+output = lookup_widget(button, "label20");
+
+strcpy(id_service_supp,gtk_entry_get_text(GTK_ENTRY(input1)));
+ser = chercher_service("service.txt", id_service_supp);
+if (strcmp(ser.id_service,"-1")==0){
+GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : Agent n'est pas trouvé");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+else {
+gtk_label_set_text(GTK_LABEL(output),ser.nom_service);
+}
+}
+
+
+void
+on_checkbutton1_toggled                (GtkToggleButton *togglebutton,
+                                        gpointer         user_data)
+{
+if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(togglebutton)))
+supp_index =1;
+}
+
+
+void
+on_EA_supp_service_button_clicked      (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+if (supp_index==1){
+char id_service_supp[20];
+GtkWidget *input1;
+
+input1 = lookup_widget(button, "EA_id_serv_supp_entry");
+
+strcpy(id_service_supp, gtk_entry_get_text(GTK_ENTRY(input1)));
+if (supprimer_service("service.txt",id_service_supp)){
+       GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_INFO,
+                                                   GTK_BUTTONS_OK,
+                                                   "Le service a été supprimé avec succès.");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}else {
+        GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : Erreur de suppression.");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+
+} else {
+      GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : Cocher la case de confirmation");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+}
+
+
+void
+on_EA_affiche_service_button_clicked   (GtkWidget      *button,
+                                        gpointer         user_data)
+{
+GtkWidget *treeview;
+    GtkListStore *store;
+    GtkTreeIter iter;
+    GtkCellRenderer *renderer;
+    GtkTreeViewColumn *column;
+	FILE *f;
+
+    // Récupérer le widget treeview
+    treeview = lookup_widget(button, "treeview1");
+
+    // Définir les colonnes du treeview si ce n'est pas déjà fait
+    if (gtk_tree_view_get_model(GTK_TREE_VIEW(treeview)) == NULL) {
+        renderer = gtk_cell_renderer_text_new();
+
+        column = gtk_tree_view_column_new_with_attributes("ID Service", renderer, "text", 0, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+        column = gtk_tree_view_column_new_with_attributes("Nom Service", renderer, "text", 1, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+        column = gtk_tree_view_column_new_with_attributes("Type Véhicule", renderer, "text", 2, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+        column = gtk_tree_view_column_new_with_attributes("Tarif", renderer, "text", 3, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+        column = gtk_tree_view_column_new_with_attributes("Description", renderer, "text", 4, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+        column = gtk_tree_view_column_new_with_attributes("Disponibilité", renderer, "text", 5, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+ 
+    }
+
+    // Créer le modèle de données pour le treeview
+    store = gtk_list_store_new(6, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+    // Lire les données depuis le fichier
+    Service serv;
+	f = fopen("service.txt","r");
+if(f == NULL){return;}
+else {
+f = fopen("service.txt","a+");
+while(fscanf(f, "%s %s %s %s %s %s\n",
+	serv.id_service,
+	serv.nom_service,
+	serv.type_vehicule,
+	serv.tarif,
+	serv.description,
+	serv.disponibilite)!= EOF){
+gtk_list_store_append(store, &iter);
+gtk_list_store_set(store, &iter,
+                           0, serv.id_service,
+                           1, serv.nom_service,
+                           2, serv.type_vehicule,
+                           3, serv.tarif,
+                           4, serv.description,
+                           5, serv.disponibilite,
+                           -1);
+}
+fclose(f);
+gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(store));
+g_object_unref(store);
+}
+}
+
+
+void
+on_EA_connecter_button_clicked         (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+GtkWidget *window4, *window5;
+GtkWidget *input1, *input2;
+int tr = 0;
+char id[10],mdp[50];
+Login L;
+input1 = lookup_widget(button, "EA_id_connect_entry");
+input2 = lookup_widget(button, "EA_mdp_connect_entry");
+
+
+strcpy(id, gtk_entry_get_text(GTK_ENTRY(input1)));
+strcpy(mdp, gtk_entry_get_text(GTK_ENTRY(input2)));
+
+FILE *f = fopen("login.txt","r");
+if (f != NULL){
+while (fscanf(f,"%s %s\n",
+	L.id_connect,
+	L.mdp_connect)!=EOF){
+
+if (strcmp(L.id_connect,id)==0){
+	if (strcmp(L.mdp_connect,mdp)==0){tr=1;}
+}
+
+}
+}
+fclose(f);
+if (tr == 1){
+	window5 = lookup_widget(button, "window5");
+        window4 = create_window4 ();
+        gtk_widget_show (window4);
+        gtk_widget_hide(window5);
+}
+else {
+GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_MESSAGE_ERROR,
+                                                   GTK_BUTTONS_OK,
+                                                   "Erreur : ID ou mot de passe est incorrect");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+}
+}
+
+
+void
+on_EA_deconnexion_button_clicked       (GtkWidget       *button,
+                                        gpointer         user_data)
+{
+    GtkWidget *window4, *window5;
+
+    // Récupérer la fenêtre active "gestion_parking"
+    window4 = gtk_widget_get_toplevel(button);
+
+    // Cacher ou fermer la fenêtre actuelle
+    gtk_widget_hide(window4);
+
+    // Créer et afficher la nouvelle fenêtre "window1"
+    window5 = create_window5();
+    gtk_widget_show(window5);
+}
